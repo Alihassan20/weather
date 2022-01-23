@@ -14,12 +14,11 @@ class HomeCubit extends  Cubit<HomeStats>{
   Weather? weather;
 
   Future<void> getCurrentWeather() async {
-
     emit(HomeLoading());
     try{
-      final position = await LocationServices.getCurrentLocation();
-      final response = await DioHelper.get('lat=${position.latitude}&lon=${position.longitude}');
-      // 'lat=${position.latitude}&lon=${position.longitude}'
+      final lat = LocationServices.currentPosition!.latitude;
+      final lon = LocationServices.currentPosition!.longitude;
+      final response = await DioHelper.get('lat=$lat&lon=$lon');
       weather = Weather.fromJson(response.data);
     }catch(e){
       print(e);

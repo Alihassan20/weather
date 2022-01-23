@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class DioHelper {
 
   static const String _API_KEY = '1cefbbd5e97777721b6ac4c157619712';
-  static const String _BASE_URL = 'http://api.openweathermap.org/data/2.5/weather?';
+  static const String _BASE_URL = 'https://api.openweathermap.org/data/2.5/weather?';
 
   static Dio _dio = Dio()..options.baseUrl = _BASE_URL..options.validateStatus = (v) => v! < 500;
 
@@ -14,9 +14,10 @@ class DioHelper {
   }
 
   static Future<Response<dynamic>> get(String path){
-    final response = _dio.get(path + '&appid=' + _API_KEY);
+    final response = _dio.get(path+'&appid='+_API_KEY);
     return response;
   }
 
 }
-//http://api.openweathermap.org/data/2.5/weather?lat=31&lon=31&appid=1cefbbd5e97777721b6ac4c157619712#
+
+

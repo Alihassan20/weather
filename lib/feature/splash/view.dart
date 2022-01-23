@@ -1,34 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:weather/core/Routes/routes.dart';
-import 'package:weather/feature/Home/view.dart';
-
+import 'package:weather/feature/splash/unit/location_denied_dialog.dart';
+import '../../core/Routes/routes.dart';
 import '../../core/location_services/location_services.dart';
-class SplashView extends StatefulWidget {
-  const SplashView({Key? key}) : super(key: key);
+import '../Home/view.dart';
 
+class SplashView extends StatefulWidget {
   @override
-  _SplashViewState createState() => _SplashViewState();
+  State<SplashView> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashView> {
+class _SplashViewState extends State<SplashView> with WidgetsBindingObserver {
+
+  AppLifecycleState previousState = AppLifecycleState.inactive;
 
   @override
   void initState() {
+    WidgetsBinding.instance!.addObserver(this);
     getLocation();
     super.initState();
   }
-  void getLocation()async{
-    final position = await LocationServices.getCurrentLocation();
-    print(position.longitude);
-    print(position.latitude);
-    MagicRouter.navigateAndPopAll(  HomeView());
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if(state == AppLifecycleState.resumed && previousState == AppLifecycleState.paused){
+      MagicRouter.navigateAndPopAll(SplashView());
+    }
+    previousState = state;
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  void getLocation() async {
+    await LocationServices.getCurrentLocation();
+    if(LocationServices.currentPosition == null){
+      showLocationDeniedDialog();
+    }else{
+      MagicRouter.navigateAndPopAll(HomeView());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body:  Center(
-         child: Icon(Icons.person,size: 50,),
+      body: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
